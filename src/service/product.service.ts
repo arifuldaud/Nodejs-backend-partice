@@ -1,4 +1,4 @@
-
+import fs from "fs"
 import path from "node:path";
 
 const filePath = path.join(
@@ -7,6 +7,8 @@ const filePath = path.join(
 );
 
 export const productService = () => {
-    console.log(process.cwd());
-    console.log(filePath);
+    // console.log(process.cwd());
+    // console.log(filePath);
+    const result = fs.readFileSync(filePath,"utf-8");
+    console.log(result);
 };
