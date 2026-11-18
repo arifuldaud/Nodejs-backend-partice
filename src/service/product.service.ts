@@ -10,5 +10,6 @@ export const productService = () => {
     // console.log(process.cwd());
     // console.log(filePath);
     const result = fs.readFileSync(filePath,"utf-8");
-    console.log(result);
+    // console.log(result);
+    return JSON.parse(result);
 };

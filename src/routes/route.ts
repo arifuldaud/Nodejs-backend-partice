@@ -5,6 +5,12 @@ const routeHandler = (req:IncomingMessage,res:ServerResponse ) =>{
 const url = req.url
  const method =req.method
 
+ const urlParams = url?.split("/")
+//console.log(urlParams)
+
+const id = urlParams && urlParams[1] === "products" ? Number(urlParams[2]) :null ;
+console.log(id)
+ //Get all Products
 if(url=== "/" && method === "GET" ) {
  //console.log("This is a route Route");
 res.writeHead(200,{"Content-Type":"application/json"});  ///text/palin
