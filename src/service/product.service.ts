@@ -13,3 +13,8 @@ export const productService = () => {
     // console.log(result);
     return JSON.parse(result);
 };
+
+
+export const createProduct = (payload:any) =>{
+fs.writeFileSync(filePath,payload);
+};

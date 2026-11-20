@@ -1,120 +1,100 @@
+
 import { IncomingMessage, ServerResponse } from "http";
-import { productService } from "../service/product.service";
+import { createProduct, productService } from "../service/product.service";
 import { IProduct } from "../types/product";
+import { bodyParser } from "../utlis/bodyParser";
 
-
-const productController = (
+const productController = async (
     req: IncomingMessage,
     res: ServerResponse
 ) => {
-const url =req.url;
-const method = req.method;
 
-if(url === "/products" && method ==="GET"){
-//    const produts =
-// [
-//   {
-//     "id": 1,
-//     "name": "product-1",
-//     "price": 20,
-//     "category": "Electronics",
-//     "stock": 15
-//   },
-//   {
-//     "id": 2,
-//     "name": "product-2",
-//     "price": 30,
-//     "category": "Electronics",
-//     "stock": 10
-//   },
-//   {
-//     "id": 3,
-//     "name": "Laptop",
-//     "price": 750,
-//     "category": "Computer",
-//     "stock": 8
-//   },
-//   {
-//     "id": 4,
-//     "name": "Smartphone",
-//     "price": 450,
-//     "category": "Mobile",
-//     "stock": 20
-//   },
-//   {
-//     "id": 5,
-//     "name": "Keyboard",
-//     "price": 50,
-//     "category": "Accessories",
-//     "stock": 25
-//   },
-//   {
-//     "id": 6,
-//     "name": "Mouse",
-//     "price": 25,
-//     "category": "Accessories",
-//     "stock": 40
-//   },
-//   {
-//     "id": 7,
-//     "name": "Monitor",
-//     "price": 200,
-//     "category": "Electronics",
-//     "stock": 12
-//   },
-//   {
-//     "id": 8,
-//     "name": "Headphone",
-//     "price": 80,
-//     "category": "Accessories",
-//     "stock": 18
-//   },
-//   {
-//     "id": 9,
-//     "name": "Smart Watch",
-//     "price": 120,
-//     "category": "Wearable",
-//     "stock": 14
-//   },
-//   {
-//     "id": 10,
-//     "name": "Tablet",
-//     "price": 300,
-//     "category": "Electronics",
-//     "stock": 9
-//   }
-// ]
+    const url = req.url;
+    const method = req.method;
 
-const produts = productService();
-    res.writeHead(200, {
-        "Content-Type": "application/json"
-    });
+    const urlParams = url?.split("/");
 
-    
-    else if(method ==="GET" && id !==null){
+    const id =
+        urlParams && urlParams[1] === "products" && urlParams[2]
+            ? Number(urlParams[2])
+            : null;
 
-const produts = productService();
 
-const product = produts.find((p:IProduct) =>p.id === id);
-    res.writeHead(200, {
-        "Content-Type": "application/json"
-    });
+    // GET All Products
+    if (method === "GET" && url === "/products") {
 
-    res.end(JSON.stringify({
-        message: "Products Received Succesfully",
-        data:product,
-    }));
+        const products = productService();
+
+        res.writeHead(200, {
+            "Content-Type": "application/json"
+        });
+
+        res.end(JSON.stringify({
+            message: "Products Received Successfully",
+            data: products,
+        }));
+
     }
 
-    res.end(JSON.stringify({
-        message: "Products Received Succesfully",
-        data:produt,
-    }));
+    // GET Single Product
+    else if (method === "GET" && id !== null) {
 
+        const products = productService();
 
+        const product = products.find(
+            (p: IProduct) => p.id === id
+        );
 
-}
+        res.writeHead(product ? 200 : 404, {
+            "Content-Type": "application/json"
+        });
 
+        res.end(JSON.stringify({
+            message: product
+                ? "Product Received Successfully"
+                : "Product Not Found",
+            data: product ?? null,
+        }));
+
+    }
+
+    // POST New Product
+    else if (method === "POST" && url === "/products") {
+
+        const body = await bodyParser(req);
+         
+      const newProduct = {
+    id: Date.now(),
+    ...body
+};
+       const products = productService();
+     products.push(newProduct);
+      //  console.log(newProduct);
+     createProduct(products);
+
+        res.writeHead(201, {
+            "Content-Type": "application/json"
+        });
+
+        res.end(JSON.stringify({
+            message: "Product Created Successfully",
+            data: newProduct,
+        }));
+
+    }
+
+    // Route Not Found
+    else {
+
+        res.writeHead(404, {
+            "Content-Type": "application/json"
+        });
+
+        res.end(JSON.stringify({
+            message: "Route Not Found"
+        }));
+
+    }
 };
 
 export default productController;
